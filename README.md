@@ -6,6 +6,7 @@ This tool works around `rF2` limitation by creating special nonlinear gauge code
 
 Both `linear scale` & `nonlinear scale` type gauge is supported in this tool.
 
+![preview](https://github.com/user-attachments/assets/655e42f3-3f0d-4712-889c-42c19054529c)
 
 ## Usage
 
