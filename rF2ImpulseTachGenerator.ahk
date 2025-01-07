@@ -8,11 +8,11 @@ KeyHistory 0
 TITLE := "rF2 Impulse Tach Generator"
 DESCRIPTION := "Nonlinear gauge code generator for simulating historic impulse-like tach in rF2."
 AUTHOR := "S.Victor"
-VERSION := "0.1.0"
+VERSION := "0.1.1"
 
 ; GUI
 ToolGui := Gui(, TITLE " v" VERSION)
-ToolGui.OnEvent("Close", ConfirmClose)
+ToolGui.OnEvent("Close", DialogConfirmClose)
 StatBar := ToolGui.Add("StatusBar", , "")
 CRLF := "`r`n"
 modified := false
@@ -72,11 +72,11 @@ ButtonStop := ToolGui.Add("Button", "x81 y" button_pos_y, "Stop")
 ButtonStop.OnEvent("Click", StopGenerate)
 ButtonStop.Enabled := false
 ButtonCopy := ToolGui.Add("Button", "x127 y" button_pos_y, "Copy to Clipboard")
-ButtonCopy.OnEvent("Click", CopyToClipboard)
+ButtonCopy.OnEvent("Click", DialogCopyToClipboard)
 ButtonSave := ToolGui.Add("Button", "x251 y" button_pos_y, "Save As")
-ButtonSave.OnEvent("Click", SaveToFile)
+ButtonSave.OnEvent("Click", DialogSaveToFile)
 ButtonAbout := ToolGui.Add("Button", "x465 y" button_pos_y, "About")
-ButtonAbout.OnEvent("Click", AboutInfo)
+ButtonAbout.OnEvent("Click", DialogAbout)
 
 ; Table panel
 table_rows := 30
@@ -221,7 +221,7 @@ GenerateStep(*)
     global modified
     modified := true
 
-    if (OutputCockpitInfo.Value and ConfirmRegen() = "No")
+    if (OutputCockpitInfo.Value and DialogConfirmRegen() = "No")
     {
         return
     }
@@ -253,15 +253,15 @@ GenerateLinearScaleStep(*)
     last_lower_step := MinimumValue.Value
     last_upper_step := MinimumValue.Value
     last_scale_step := MinimumValue.Value
+    max_target_step := MaximumValue.Value
     processed_steps := 0
     linear_scale := VerifyScale(LinearScaleEdit.Value)
-    total_steps := MaximumValue.Value // AverageStep.Value + 2
 
     ; Set header lines
     UpdateHeaderLine()
 
     ; Generate code
-    Loop total_steps
+    Loop
     {
         if (ButtonGen.Enabled)
         {
@@ -283,6 +283,11 @@ GenerateLinearScaleStep(*)
             step_range,
             linear_scale
         )
+
+        if (last_lower_step > max_target_step)
+        {
+            break  ; break loop if reaches max value
+        }
 
         last_scale_step += step_range * linear_scale
         last_lower_step := last_upper_step
@@ -312,7 +317,7 @@ GenerateNonlinearScaleStep(*)
     Loop table_rows
     {
         target_value := TableTarget.Get(A_Index).Value
-        nonlinear_scale := VerifyScale(TableScale.Get(A_Index).Value)
+        scale_value := VerifyScale(TableScale.Get(A_Index).Value)
 
         ; Skip empty cell value
         if (target_value = "")
@@ -340,7 +345,7 @@ GenerateNonlinearScaleStep(*)
                 last_scale_step,
                 smooth_range,
                 step_range,
-                nonlinear_scale
+                scale_value
             )
             processed_steps++
         }
@@ -349,7 +354,7 @@ GenerateNonlinearScaleStep(*)
             skipped_first_valid := true
         }
 
-        last_scale_step += step_range * nonlinear_scale
+        last_scale_step += step_range * scale_value
         last_lower_step := last_upper_step
     }
 
@@ -359,7 +364,7 @@ GenerateNonlinearScaleStep(*)
 }
 
 
-UpdateOutput(last_lower_step, last_upper_step, last_scale_step, smooth_range, step_range, scale)
+UpdateOutput(last_lower_step, last_upper_step, last_scale_step, smooth_range, step_range, scale_value)
 {
     ; Add comments
     if (CommentChecker.Value)
@@ -369,7 +374,7 @@ UpdateOutput(last_lower_step, last_upper_step, last_scale_step, smooth_range, st
             ", Range:" CompactFloats(last_lower_step)
             "-" CompactFloats(last_upper_step - smooth_range)
             ", Step:" CompactFloats(step_range)
-            ", Scale:" CompactFloats(scale)
+            ", Scale:" CompactFloats(scale_value)
             CRLF
         )
         EditPaste(comment_line, OutputCockpitInfo)
@@ -481,7 +486,7 @@ StopGenerate(*)
 }
 
 
-CopyToClipboard(*)
+DialogCopyToClipboard(*)
 {
     if (OutputTab.Value = 1)
     {
@@ -491,11 +496,11 @@ CopyToClipboard(*)
     {
         A_Clipboard := OutputUpgrades.Value
     }
-    MsgBox " Copied " OutputTab.Text " to Clipboard"
+    MsgBox(" Copied " OutputTab.Text " to Clipboard", "Copy to Clipboard")
 }
 
 
-SaveToFile(*)
+DialogSaveToFile(*)
 {
     ToolGui.Opt("+OwnDialogs")
     filename := FileSelect("S16", OutputTab.Text ".txt", "Save As", "Text file (*.txt)")
@@ -515,14 +520,14 @@ SaveToFile(*)
 }
 
 
-AboutInfo(*)
+DialogAbout(*)
 {
     info := TITLE " v" VERSION CRLF "by " AUTHOR CRLF CRLF DESCRIPTION CRLF CRLF
     MsgBox(info, "About")
 }
 
 
-ConfirmRegen(*)
+DialogConfirmRegen(*)
 {
     return MsgBox(
         "Are you sure you want to re-generate code?`n`n"
@@ -533,7 +538,7 @@ ConfirmRegen(*)
 }
 
 
-ConfirmClose(*)
+DialogConfirmClose(*)
 {
     if (!modified)
     {

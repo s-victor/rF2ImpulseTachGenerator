@@ -8,13 +8,14 @@ Both `linear scale` & `nonlinear scale` type gauge is supported in this tool.
 
 ![preview](https://github.com/user-attachments/assets/655e42f3-3f0d-4712-889c-42c19054529c)
 
+
 ## Usage
 
 ### Generate gauge code
 1. Select a gauge type from `Gauge Type` drop-down list.
-1. Click `Generate` to generate step code.
-2. Click `Stop` any time to stop a generating process.
-3. Click `Save As` to save code to a text file for later use.
+2. Click `Generate` to generate step code. Newly generated code will be output to `CockpitInfo` & `Upgrades` tabs.
+3. Click `Stop` any time to stop a generating process.
+4. Click `Save As` to save code to a text file for later use.
 
 ### Apply code to CockpitInfo.ini
 1. Select `CockpitInfo` tab.
@@ -24,14 +25,16 @@ Both `linear scale` & `nonlinear scale` type gauge is supported in this tool.
 Note, any changes to `CockpitInfo.ini` file will not take effect until a session is restarted from main menu.
 
 ### Apply code to Upgrades.ini
-1. Select `Upgrades` tab to view outputs.
+1. Select `Upgrades` tab.
 2. Click `Copy to Clipboard` to copy all code from `Upgrades` tab to Clipboard.
 3. Open `Upgrades.ini` file from a rF2 vehicle mod with `text editor`.
 4. Paste generated code to the end of `Upgrades.ini` file and save.  
-Note, if `rF2` is ready running, any changes to `Upgrades.ini` file will not take effect until `rF2` is restarted.
-5. Start `rF2` dev mode, select vehicle and go to `Tuning`, select `Impulse Tachometer` > `Enable` from `Upgrade`, done.  
+Note, if `rF2` Dev Mode is already running, any changes to `Upgrades.ini` file will not take effect until `rF2` is restarted.
+5. Start `rF2` Dev Mode, select vehicle and go to `Tuning`, select `Impulse Tachometer` > `Enable` from `Upgrade`, done.  
 
-Using `Upgrades.ini` method is more flexible for toggling impulse effect on and off based on preference and can be easily added to any existing mods, while `CockpitInfo.ini` method is easier for debugging in Dev Mode. Note, avoid use both methods on the same vehicle mod, otherwise it may cause issues. It is recommended to save code from both methods for later use.
+Using `Upgrades.ini` method is more flexible for toggling impulse effect on and off based on preference and can be easily added to any existing mods, while `CockpitInfo.ini` method is easier for debugging in Dev Mode.
+
+Note, only one of the methods should be used on a vehicle mod at a time, otherwise may cause conflict between two methods. It is recommended to save code from both methods for later use.
 
 ### Configuration
 - Gauge Type:
@@ -69,7 +72,7 @@ Using `Upgrades.ini` method is more flexible for toggling impulse effect on and 
 - Scale Column
     - `Scale` column is available after enabled `Nonlinear` scale mode. Each row sets a scale value that scales step range for next impulse step.
 
-Note, there are total 30 rows, empty rows are skipped and excluded from calculation and output. The table does not support inserting or removing rows, it is recommended to make a reference spreadsheet in other program for setting up the values.
+Note, there are total 30 rows in the table, empty rows are skipped and excluded from calculation and output. The table does not support inserting or removing rows, it is recommended to make a reference spreadsheet in other program for setting up the values.
 
 
 ## Requirements
